@@ -11,11 +11,11 @@ from tornado import ioloop
 import zmq
 from zmq.eventloop.zmqstream import ZMQStream
 
-from colugo.publisher import Publisher
-from colugo.subscriber import Subscriber
-from colugo.request_client import RequestClient
-from colugo.reply_server import ReplyServer
-from colugo.repeater import Repeater
+from colugo.py.publisher import Publisher
+from colugo.py.subscriber import Subscriber
+from colugo.py.request_client import RequestClient
+from colugo.py.reply_server import ReplyServer
+from colugo.py.repeater import Repeater
 
 logging.basicConfig(
     format="[%(asctime)s][%(name)s](%(levelname)s) %(message)s", level=logging.DEBUG)

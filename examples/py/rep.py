@@ -2,10 +2,7 @@
 
 import os
 import sys
-# local path to library
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from colugo.node import Node
+from colugo.py.node import Node
 
 class ReplyServerExample(Node):
     def __init__(self, name):

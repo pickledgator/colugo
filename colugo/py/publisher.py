@@ -1,5 +1,5 @@
 import zmq
-from colugo.socket import Socket
+from colugo.py.socket import Socket
 
 
 class Publisher(Socket):
