@@ -2,7 +2,7 @@
 
 import os
 import sys
-import proto.test_pb2
+import examples.proto.test_pb2
 from colugo.py.node import Node
 
 class PublisherExample(Node):
@@ -13,7 +13,7 @@ class PublisherExample(Node):
         self.count = 0
 
     def callback(self):
-        test_message = proto.test_pb2.TestMessage()
+        test_message = examples.proto.test_pb2.TestMessage()
         test_message.message = "This is a message"
         test_message.id = 0
         test_message.value = self.count

@@ -2,7 +2,7 @@
 
 import os
 import sys
-import proto.test_pb2
+import examples.proto.test_pb2
 from colugo.py.node import Node
 
 class SubscriberExample(Node):
@@ -11,7 +11,7 @@ class SubscriberExample(Node):
         self.subscriber = self.add_subscriber("tcp://127.0.0.1:50000", self.callback)
 
     def callback(self, message):
-        msg = proto.test_pb2.TestMessage()
+        msg = examples.proto.test_pb2.TestMessage()
         try:
             msg.ParseFromString(message)
             self.logger.info("Received message!\n{}".format(msg))
