@@ -9,12 +9,12 @@ class RequestClient(Socket):
         self.connect(address)  # Socket.connect()
         self.callback = None
 
-    def request(self, message, callback, timeout=2000, timeout_handler=None):
+    def send(self, message, callback, timeout=2000, timeout_handler=None):
         # TODO(pickledgator): what if server is dead?
         # TODO(pickledgator): timeout/retry?
         self.callback = callback
         self.receive(self.reply_callback, timeout, timeout_handler)  # Socket.receive()
-        self.send(message)  # Socket.send()
+        super(RequestClient, self).send(message)  # Socket.send()
 
     def reply_callback(self, message):
         if self.callback:

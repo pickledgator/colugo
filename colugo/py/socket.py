@@ -7,8 +7,29 @@ from zmq.eventloop.zmqstream import ZMQStream
 
 
 class Socket:
+    """Wrapper class for zmq.Socket
+
+    This class utilizes a tornado event loop to support using ZmqStream for sending 
+    and receiving messages. Additionally it encorporates specific settings and infrastructure
+    to allow request/reply sockets to be more robust to timeout conditions and failure states.
+    
+    Attributes:
+        logger: Logger instance for all socket activity
+        loop: Tornado event loop instance
+        address: Assigned address of the zmq.Socket
+        protocol: Assigned zmq socket type
+        ctx: ZMQ context instance
+        stream: ZmqStream instance
+        zmq_socket: Underlying zmq.Socket object
+    """
 
     def __init__(self, loop, protocol):
+        """Constructor for Socket class
+        
+        Args:
+            loop: Tornado event loop
+            protocol: Assigned protocol for the zmq.Socket
+        """
         self.logger = logging.getLogger("Socket")
         self.loop = loop
         self.protocol = protocol
@@ -19,6 +40,18 @@ class Socket:
         self.create_socket(protocol)
 
     def create_socket(self, protocol):
+        """Helper function for creating a zmq.Socket of various types with various options
+
+        Assumes that request sockets need extra configuration options to prevent erroneous states
+        when two requests are sent before a reply is received. REQ_RELAXED will drop the first
+        request and reset the underlying socket automatically allowing the second request to be
+        processed. Additionally, these options ensure that an event loop can exit even if a send is
+        pending but hasn't been sent yet.
+
+        Args:
+            protocol: zmq socket type
+            
+        """
         if protocol == zmq.REQ:
             # make sure that replies back to req's are coordinated with header data
             self.ctx.setsockopt(zmq.REQ_CORRELATE, 1)

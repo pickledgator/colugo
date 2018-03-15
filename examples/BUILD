@@ -63,3 +63,23 @@ py_binary(
         "@com_google_protobuf//:protobuf_python",
     ],
 )
+
+py_binary(
+    name = "pub_json",
+    srcs = ["py/pub_json.py"],
+    default_python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//colugo:colugo_py",
+    ],
+)
+
+py_binary(
+    name = "sub_json",
+    srcs = ["py/sub_json.py"],
+    default_python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//colugo:colugo_py",
+    ],
+)
