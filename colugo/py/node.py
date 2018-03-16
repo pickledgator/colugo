@@ -11,6 +11,7 @@ from tornado import ioloop
 import zmq
 from zmq.eventloop.zmqstream import ZMQStream
 
+from colugo.py.discovery import Discovery
 from colugo.py.publisher import Publisher
 from colugo.py.subscriber import Subscriber
 from colugo.py.request_client import RequestClient
@@ -41,6 +42,7 @@ class Node:
         self.logger.info("Node {} is initializing".format(self.name))
         self.loop = ioloop.IOLoop.current()
         self.sockets = []
+        self.discovery = Discovery(name)
         # exit conditions
         signal.signal(signal.SIGINT, lambda sig, frame: self.loop.add_callback_from_signal(self.stop))
 
@@ -82,7 +84,7 @@ class Node:
         """
         self.loop.call_later(delay_ms / 1000.0, callback)
 
-    def add_publisher(self, address):
+    def add_publisher(self, topic):
         """Helper function to add a colugo.py.Publisher object to the node
         
         Args:
@@ -91,8 +93,10 @@ class Node:
         Returns:
             colugo.py.Publisher object, call send() to send a message
         """
-        sock = Publisher(self.loop, address)
+        # TODO(pickledgator): Get iface address here
+        sock = Publisher(self.loop, "127.0.0.1")
         self.sockets.append(sock)
+        self.discovery.register_topic("pub_topic", "PUB", sock.address, sock.port)
         return sock
 
     def add_subscriber(self, address, callback):
@@ -107,6 +111,7 @@ class Node:
         """
         sock = Subscriber(self.loop, address, callback)
         self.sockets.append(sock)
+        self.discovery.register_topic("sub_topic", "SUB", sock.address, socket.port)
         return sock
 
     def add_request_client(self, address):

@@ -37,6 +37,7 @@ class Socket:
         self.stream = None
         self.zmq_socket = None
         self.address = None
+        self.port = None
         self.create_socket(protocol)
 
     def create_socket(self, protocol):
@@ -63,15 +64,20 @@ class Socket:
             self.ctx.setsockopt(zmq.LINGER, 0)
         self.zmq_socket = self.ctx.socket(protocol)
 
-    def connect(self, address):
-        self.zmq_socket.connect(address)
-        self.address = address
+    def connect(self, address, port):
+        self.zmq_socket.connect("tcp://{}:{}".format(address, port))
+        self.address = address # 127.0.0.1
+        self.port = port # 10001
         self.start_stream()
+        return (self.address, self.port)
 
-    def bind(self, address):
-        self.zmq_socket.bind(address)
-        self.address = address
+    def bind(self, ip_str):
+        # TODO(pickledgator): Find specific range that has the most availability
+        port = self.zmq_socket.bind_to_random_port("tcp://{}".format(ip_str), min_port=10001, max_port=20000, max_tries=100)
+        self.address = ip_str
+        self.port = port
         self.start_stream()
+        return (self.address, self.port)
 
     def send(self, message):
         self.logger.debug("Sending message: {}".format(message))

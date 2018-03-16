@@ -1,3 +1,4 @@
 pyzmq==17.0.0
 tornado==5.0
 protobuf==3.5.2
+zeroconf==0.20.0
