@@ -12,7 +12,6 @@ class PublisherExample(Node):
 
     def callback(self):
         self.publisher.send("Message")
-        print(self.discovery.directory.services)
 
 if __name__ == "__main__":
 

@@ -150,10 +150,8 @@ class Node:
                 client.socket.connect(service.address, service.port)
 
     def remove_service_handler(self, topic):
-        print("remove_service_handler")
-        # for s in self.sockets:
-        #     if s.topic == topic:
-        #         if s.protocol == zmq.PUB:
-        #             s.unbind()
-        #         if s.protocol == zmq.SUB:
-        #             s.disconnect()
+        for client in self.discovery.clients.services:
+            if topic == client.topic and client.socket:
+                print("blah")
+                # client.socket.disconnect()
+

@@ -87,7 +87,7 @@ class Service:
         self.socket = socket
         self.socket_type = socket_type
         self.node_uuid = node_uuid
-        self.mdns_name = "_{}.{}".format(self.topic, COLUGO_TYPE_STR)
+        self.mdns_name = "_{}._{}.{}".format(self.topic, self.node_uuid, COLUGO_TYPE_STR)
         self.server = True if (socket_type == zmq.PUB or socket_type == zmq.REP) else False
 
     def get_service_info(self):
@@ -165,10 +165,10 @@ class Directory:
                 return True
         return False
 
-    def remove(self, service):
+    def remove(self, topic):
         for s in self.services:
             # use Service eq operator to compare service definitions
-            if s == service:
+            if s.topic == topic:
                 self.services.remove(s)
                 return True
         return False
@@ -201,7 +201,11 @@ class Discovery:
         service = Service(topic, address, port, socket_type, node_uuid, socket)
         self.clients.add(service)
 
-    def service_from_zeroconf_query(self, topic):
+    def unregister_client(self, service):
+        # TODO(pickledgator): Do other network servers/clients care if a local client goes down?
+        self.clients.remove(service)
+
+    def service_from_zeroconf_query(self, topic, uuid):
         def fix_socket_type(info):
             # For whatever reason, zeroconf is casting a property=1 to property=True
             # This just undoes that cast since socket_type will be an int (not bool)
@@ -210,7 +214,7 @@ class Discovery:
             return info
 
         info = ServiceInfo(type_=COLUGO_TYPE_STR,
-                           name="_{}.{}".format(topic, COLUGO_TYPE_STR))
+                           name="_{}._{}.{}".format(topic, uuid, COLUGO_TYPE_STR))
         res = info.request(self.zeroconf, 1000)
         address = port = node_uuid = None
         service = Service()
@@ -225,6 +229,11 @@ class Discovery:
             if s.node_uuid == self.node_uuid:
                 self.unregister_server(s)
 
+    def unregister_all_clients(self):
+        for c in self.clients.services:
+            if c.node_uuid == self.node_uuid:
+                self.unregister_client(c)
+
     def stop_listening(self):
         self.zeroconf.remove_all_service_listeners()
 
@@ -235,15 +244,15 @@ class Discovery:
     def topic_from_mdns_name(self, name):
         # assumes name is rigidly structured eg, _topic.string._colugo._tcp.local.
         tokens = [t[:-1] for t in name.split("_")][1:]
-        return tokens[0]
+        return (tokens[0], tokens[1])
 
     def add_service(self, zeroconf, service_type, name):
         """This function is utilized by the ServiceBrowser callbacks
         """
         # get details of the newly discovered service
-        topic = self.topic_from_mdns_name(name)
+        (topic,uuid) = self.topic_from_mdns_name(name)
         # generate our full topic object from the acquired info
-        service = self.service_from_zeroconf_query(topic)
+        service = self.service_from_zeroconf_query(topic,uuid)
         if service:
             self.logger.debug("Service added: {}".format(name))
             # try to add the topic to the directory
@@ -257,7 +266,11 @@ class Discovery:
         """
         topic = self.topic_from_mdns_name(name)
         self.logger.debug("Service removed: {}".format(name))
-        # self.directory.remove(s)
+        # By time this callback occurs, we can no longer access the ServiceInfo
+        # for the specified service, so we can have to remove our service from the 
+        # Directory based on the topic only.
+        # TODO(pickledgator): This wont work if we have two services with the same topic
+        self.directory.remove(topic)
         self.on_remove(topic)
 
 if __name__ == "__main__":
