@@ -13,7 +13,7 @@ class Socket:
     This class utilizes a tornado event loop to support using ZmqStream for sending 
     and receiving messages. Additionally it encorporates specific settings and infrastructure
     to allow request/reply sockets to be more robust to timeout conditions and failure states.
-    
+
     Attributes:
         logger: Logger instance for all socket activity
         loop: Tornado event loop instance
@@ -26,7 +26,7 @@ class Socket:
 
     def __init__(self, loop, protocol):
         """Constructor for Socket class
-        
+
         Args:
             loop: Tornado event loop
             protocol: Assigned protocol for the zmq.Socket
@@ -53,7 +53,7 @@ class Socket:
 
         Args:
             protocol: zmq socket type
-            
+
         """
         if protocol == zmq.REQ:
             # make sure that replies back to req's are coordinated with header data
@@ -68,8 +68,8 @@ class Socket:
 
     def connect(self, address, port):
         self.zmq_socket.connect("tcp://{}:{}".format(address, port))
-        self.address = address # 127.0.0.1
-        self.port = port # 10001
+        self.address = address  # 127.0.0.1
+        self.port = port  # 10001
         self.start_stream()
         return (self.address, self.port)
 

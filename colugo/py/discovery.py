@@ -17,65 +17,6 @@ logging.basicConfig(
 
 COLUGO_TYPE_STR = "_colugo._tcp.local."
 
-# class TopicMap:
-#     """Tree structure storing information about discovered services, their topics and their addresses
-
-#     Example tree structure
-#     {
-#         'topic.name.1': {
-#             'service.name.1': ServiceInfo(),
-#             'service.name.2': ServiceInfo()
-#             }
-#         'topic.name.2': {
-#             'service.name.1': ServiceInfo(),
-#             'service.name.2': ServiceInfo()
-#             }
-#     }
-
-#     """
-#     def __init__(self):
-#         # map with keys by topic
-#         self.map = {}
-
-#     def add(self, info):
-#         # clean up the utf encodings from zeroconf
-#         topic_name = info.properties[b'topic'].decode('utf-8')
-#         service_name = info.name
-#         # check to see if our topic already exists in the map
-#         if topic_name in self.map:
-#             # check to see if our specific service already exists within the individual topic identifier
-#             if service_name in self.map[topic_name]:
-#                 self.logger.error("Service {} already exists in map".format(service_name))
-#                 return False
-#             else:
-#                 # otherwise add the service to the map, within the topic key
-#                 self.map[topic_name][service_name] = info
-#         # otherwise, if our topic is not already in the map, create a new list out of the new service
-#         else:
-#             self.map[topic_name] = {service_name: info}
-
-#         return True
-
-#     def remove(self, service_name, topic_name):
-#         removed = False
-#         # check to see if our topic is in the map at all
-#         if topic_name in self.map:
-#             if service_name in self.map[topic_name]:
-#                 del self.map[topic_name][service_name]
-#                 removed = True
-#             # if all of our services have been removed for a specific topic, delete the topic from the map
-#             if len(self.map[topic_name].items()) == 0:
-#                 del self.map[topic_name]
-#         return True if removed else False
-
-#     def contains(self, info):
-#         return True if info.name in self.map else False
-
-# def topic_from_service(service_name, service_type):
-#     # remove service_type from the end of the string, then ignore the first element ("_")
-#     # eg., _topic.name.1._colugo._tcp._local. -> topic.name.1
-#     return service_name.replace(service_type, "")[1:]
-
 
 class Service:
 
@@ -250,9 +191,9 @@ class Discovery:
         """This function is utilized by the ServiceBrowser callbacks
         """
         # get details of the newly discovered service
-        (topic,uuid) = self.topic_from_mdns_name(name)
+        (topic, uuid) = self.topic_from_mdns_name(name)
         # generate our full topic object from the acquired info
-        service = self.service_from_zeroconf_query(topic,uuid)
+        service = self.service_from_zeroconf_query(topic, uuid)
         if service:
             self.logger.debug("Service added: {}".format(name))
             # try to add the topic to the directory
@@ -267,7 +208,7 @@ class Discovery:
         topic = self.topic_from_mdns_name(name)
         self.logger.debug("Service removed: {}".format(name))
         # By time this callback occurs, we can no longer access the ServiceInfo
-        # for the specified service, so we can have to remove our service from the 
+        # for the specified service, so we can have to remove our service from the
         # Directory based on the topic only.
         # TODO(pickledgator): This wont work if we have two services with the same topic
         self.directory.remove(topic)
