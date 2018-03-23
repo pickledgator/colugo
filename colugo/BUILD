@@ -9,12 +9,13 @@ py_library(
         "py/repeater.py",
         "py/reply_server.py",
         "py/request_client.py",
-        "py/socket.py",
-        "py/subscriber.py"
+        "py/zsocket.py",
+        "py/subscriber.py",
     ],
     visibility = ["//visibility:public"],
     deps = [
         requirement("pyzmq"),
-        requirement("tornado")
+        requirement("tornado"),
+        requirement("zeroconf"),
     ],
 )

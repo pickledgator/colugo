@@ -1,5 +1,6 @@
 import functools
 import logging
+import socket
 from tornado import ioloop
 import zmq
 from zmq.eventloop.future import Poller
@@ -33,6 +34,7 @@ class Socket:
         self.logger = logging.getLogger("Socket")
         self.loop = loop
         self.protocol = protocol
+        self.server = True if (protocol == zmq.PUB or protocol == zmq.REP) else False
         self.ctx = zmq.Context().instance()
         self.stream = None
         self.zmq_socket = None
@@ -71,13 +73,33 @@ class Socket:
         self.start_stream()
         return (self.address, self.port)
 
-    def bind(self, ip_str):
+    def disconnect(self):
+        self.stop_stream()
+        self.zmq_socket.disconnect("tcp://{}:{}".format(self.address, self.port))
+
+    def get_local_ip(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect(("10.255.255.255", 1))
+            ip = s.getsockname()[0]
+        except:
+            ip = "127.0.0.1"
+        finally:
+            s.close()
+        return ip
+
+    def bind(self):
         # TODO(pickledgator): Find specific range that has the most availability
-        port = self.zmq_socket.bind_to_random_port("tcp://{}".format(ip_str), min_port=10001, max_port=20000, max_tries=100)
-        self.address = ip_str
+        ip = self.get_local_ip()
+        port = self.zmq_socket.bind_to_random_port("tcp://{}".format(ip), min_port=10001, max_port=20000, max_tries=100)
+        self.address = ip
         self.port = port
         self.start_stream()
         return (self.address, self.port)
+
+    def unbind(self):
+        self.stop_stream()
+        self.zmq_socket.unbind("tcp://{}:{}".format(self.address, self.port))
 
     def send(self, message):
         self.logger.debug("Sending message: {}".format(message))
@@ -136,5 +158,5 @@ class Socket:
             self.logger.error("Stream is not open")
 
     def close(self):
-        self.stop_stream()
+        self.disconnect()
         self.zmq_socket.close()

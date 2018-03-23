@@ -8,6 +8,7 @@ import signal
 import threading
 import time
 from tornado import ioloop
+import uuid
 import zmq
 from zmq.eventloop.zmqstream import ZMQStream
 
@@ -41,8 +42,8 @@ class Node:
         self.logger = logging.getLogger(self.name)
         self.logger.info("Node {} is initializing".format(self.name))
         self.loop = ioloop.IOLoop.current()
-        self.sockets = []
-        self.discovery = Discovery(name)
+        self.uuid = str(uuid.uuid1())
+        self.discovery = Discovery(name, self.uuid, self.add_service_handler, self.remove_service_handler)
         # exit conditions
         signal.signal(signal.SIGINT, lambda sig, frame: self.loop.add_callback_from_signal(self.stop))
 
@@ -56,8 +57,7 @@ class Node:
         """ Stop the event loop and close all open sockets
         """
         self.logger.info("Node {} is stopping".format(self.name))
-        for s in self.sockets:
-            s.close()
+        self.discovery.stop()
         self.loop.stop()
 
     def add_repeater(self, delay_ms, callback):
@@ -93,13 +93,14 @@ class Node:
         Returns:
             colugo.py.Publisher object, call send() to send a message
         """
-        # TODO(pickledgator): Get iface address here
-        sock = Publisher(self.loop, "127.0.0.1")
-        self.sockets.append(sock)
-        self.discovery.register_topic("pub_topic", "PUB", sock.address, sock.port)
+        # Since the socket binds to a random open port as a server, we need to grab the port after socket creation
+        sock = Publisher(self.loop, topic)
+        # bind immediately so we can publish the correct address and port
+        sock.bind()
+        self.discovery.register_server(topic, zmq.PUB, self.uuid, sock, sock.address, sock.port)
         return sock
 
-    def add_subscriber(self, address, callback):
+    def add_subscriber(self, topic, callback):
         """Helper function to add a colugo.py.Subscriber object to the node
         
         Args:
@@ -109,9 +110,8 @@ class Node:
         Returns:
             colugo.py.Subscriber object
         """
-        sock = Subscriber(self.loop, address, callback)
-        self.sockets.append(sock)
-        self.discovery.register_topic("sub_topic", "SUB", sock.address, socket.port)
+        sock = Subscriber(self.loop, topic, callback)
+        self.discovery.register_client(topic, zmq.SUB, node_uuid=self.uuid, socket=sock)
         return sock
 
     def add_request_client(self, address):
@@ -140,3 +140,20 @@ class Node:
         sock = ReplyServer(self.loop, address, callback)
         self.sockets.append(sock)
         return sock
+
+    def add_service_handler(self, service):
+        # when a new service is announced, iterate through the local clients list and if
+        # any topics match to broadcast server topic, try to connect. This should apply
+        # for both local servers and remote servers
+        for client in self.discovery.clients.services:
+            if service.topic == client.topic and client.socket:
+                client.socket.connect(service.address, service.port)
+
+    def remove_service_handler(self, topic):
+        print("remove_service_handler")
+        # for s in self.sockets:
+        #     if s.topic == topic:
+        #         if s.protocol == zmq.PUB:
+        #             s.unbind()
+        #         if s.protocol == zmq.SUB:
+        #             s.disconnect()

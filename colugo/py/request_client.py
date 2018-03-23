@@ -1,5 +1,5 @@
 import zmq
-from colugo.py.socket import Socket
+from colugo.py.zsocket import Socket
 
 
 class RequestClient(Socket):
