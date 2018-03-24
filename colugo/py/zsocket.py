@@ -125,7 +125,7 @@ class Socket:
     def cycle_socket(self):
         self.close()
         self.create_socket(self.protocol)
-        self.connect(self.address)
+        # self.connect(self.address, self.port)
 
     def receive(self, handler, timeout_ms=None, timeout_callback=None):
         def msg_handler(handler, timeout, message):
@@ -158,5 +158,8 @@ class Socket:
             self.logger.error("Stream is not open")
 
     def close(self):
-        self.disconnect()
+        try:
+            self.disconnect()
+        except:
+            pass
         self.zmq_socket.close()

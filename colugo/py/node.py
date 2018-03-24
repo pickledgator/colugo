@@ -115,20 +115,7 @@ class Node:
         self.discovery.register_client(topic, zmq.SUB, node_uuid=self.uuid, socket=sock)
         return sock
 
-    def add_request_client(self, address):
-        """Helper function to add a colugo.py.RequestClient object to the node
-
-        Args:
-            address: ZMQ address to connect to
-
-        Returns:
-            colugo.py.RequestClient object, call send(msg, callback) to send a message
-        """
-        sock = RequestClient(self.loop, address)
-        self.sockets.append(sock)
-        return sock
-
-    def add_reply_server(self, address, callback):
+    def add_reply_server(self, topic, callback):
         """Helper function to add a colugo.py.ReplyServer object to the node
 
         Args:
@@ -138,8 +125,22 @@ class Node:
         Returns:
             colugo.py.ReplyServer object
         """
-        sock = ReplyServer(self.loop, address, callback)
-        self.sockets.append(sock)
+        sock = ReplyServer(self.loop, topic, callback)
+        sock.bind()
+        self.discovery.register_server(topic, zmq.REP, self.uuid, sock, sock.address, sock.port)
+        return sock
+
+    def add_request_client(self, topic, on_connect):
+        """Helper function to add a colugo.py.RequestClient object to the node
+
+        Args:
+            address: ZMQ address to connect to
+
+        Returns:
+            colugo.py.RequestClient object, call send(msg, callback) to send a message
+        """
+        sock = RequestClient(self.loop, topic, on_connect)
+        self.discovery.register_client(topic, zmq.REQ, node_uuid=self.uuid, socket=sock)
         return sock
 
     def add_service_handler(self, service):

@@ -7,7 +7,7 @@ from colugo.py.node import Node
 class ReplyServerExample(Node):
     def __init__(self, name):
         Node.__init__(self, name)
-        self.reply_server = self.add_reply_server("tcp://127.0.0.1:50001", self.request_callback)
+        self.reply_server = self.add_reply_server("rpc.topic", self.request_callback)
 
     def request_callback(self, message, reply):
         self.logger.info("Got request message: {}".format(message))

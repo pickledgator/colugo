@@ -4,10 +4,16 @@ from colugo.py.zsocket import Socket
 
 class RequestClient(Socket):
 
-    def __init__(self, loop, address):
+    def __init__(self, loop, topic, on_connect):
         super(RequestClient, self).__init__(loop, zmq.REQ)  # Socket.__init__()
-        self.connect(address)  # Socket.connect()
         self.callback = None
+        self.topic = topic
+        self.on_connect = on_connect
+
+    def connect(self, address, port):
+        self.logger.debug("REQ \"{}\" connecting to tcp://{}:{}".format(self.topic, address, port))
+        super(RequestClient, self).connect(address, port) # Socket.connect()
+        self.on_connect()
 
     def send(self, message, callback, timeout=2000, timeout_handler=None):
         # TODO(pickledgator): what if server is dead?

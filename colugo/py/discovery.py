@@ -26,6 +26,7 @@ class Service:
         self.address = address
         self.port = port
         self.socket = socket
+        # this is stored as a zmq socket type (int) and converted to an str(int) when compiling ServiceInfo packet
         self.socket_type = socket_type
         self.node_uuid = node_uuid
         self.mdns_name = "_{}._{}.{}".format(self.topic, self.node_uuid, COLUGO_TYPE_STR)
@@ -37,7 +38,7 @@ class Service:
                            address=socket.inet_aton(self.address),
                            port=self.port,
                            # server='{}.local.'.format(socket.gethostname()),
-                           properties={"topic": self.topic, "socket_type": self.socket_type, "node_uuid": self.node_uuid})
+                           properties={"topic": self.topic, "socket_type": str(self.socket_type), "node_uuid": self.node_uuid})
         return info
 
     def fill_from_info(self, info):
@@ -55,8 +56,7 @@ class Service:
 
         self.address = socket.inet_ntoa(info.address)
         self.port = info.port
-        # TODO(pickledgator): this needs to be zmq.PUB type
-        self.socket_type = socket_type_from_int(info.properties['socket_type'.encode('utf-8')])
+        self.socket_type = socket_type_from_int(int(info.properties['socket_type'.encode('utf-8')]))
         self.node_uuid = info.properties['node_uuid'.encode('utf-8')].decode('utf-8')
         self.topic = info.properties['topic'.encode('utf-8')].decode('utf-8')
         self.mdns_name = info.name
