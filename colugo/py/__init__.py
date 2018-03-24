@@ -1,1 +1,1 @@
-__all__ = ['node', 'publisher', 'repeater', 'reply_server', 'request_client', 'socket', 'subscriber']
+__all__ = ['discovery', 'node', 'publisher', 'repeater', 'reply_server', 'request_client', 'subscriber', 'zsocket']
