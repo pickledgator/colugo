@@ -8,7 +8,7 @@ from colugo.py.node import Node
 class PublisherExample(Node):
     def __init__(self, name):
         Node.__init__(self, name)
-        self.publisher = self.add_publisher("tcp://127.0.0.1:50000")
+        self.publisher = self.add_publisher("proto.pub.topic")
         self.repeater = self.add_repeater(1000, self.callback)
         self.count = 0
 

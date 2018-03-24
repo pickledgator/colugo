@@ -8,7 +8,7 @@ from colugo.py.node import Node
 class SubscriberExample(Node):
     def __init__(self, name):
         super(SubscriberExample, self).__init__(name)
-        self.subscriber = self.add_subscriber("tcp://127.0.0.1:50000", self.callback)
+        self.subscriber = self.add_subscriber("json.pub.topic", self.callback)
 
     def callback(self, message):
         # Decode UTF-8 bytes to Unicode, and convert single quotes 
