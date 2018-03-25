@@ -16,16 +16,18 @@ class Subscriber(Socket):
         callback: Handler executed when the socket receives messages from a publisher
     """
 
-    def __init__(self, loop, topic, callback):
+    def __init__(self, loop, topic, callback, on_connect):
         """Constructor for the subscriber class
 
         Args:
             topic: The topic associated with the socket on the network
             callback: Handler executed when the socket receives messages from a publisher
+            on_connect: Callback handler when a connection is attempted
         """
         super(Subscriber, self).__init__(loop, zmq.SUB)  # Socket.__init__()
         self.topic = topic
         self.callback = callback
+        self.on_connect = on_connect
         self.set_filter()
 
     def connect(self, address, port):
@@ -39,6 +41,7 @@ class Subscriber(Socket):
         self.logger.debug("SUB \"{}\" connecting to tcp://{}:{}".format(self.topic, address, port))
         super(Subscriber, self).connect(address, port)
         super(Subscriber, self).receive(self.callback)
+        self.on_connect()
 
     def set_filter(self, filter_string=""):
         """Helper function to enable zmq.SUBSCRIBER filters
@@ -58,5 +61,5 @@ class Subscriber(Socket):
     def close(self):
         """Just calls the colugo.py.Socket.close()
         """
-        self.logger.debug("Subscriber \"{}\" disconnecting".format(self.topic))
+        self.logger.debug("SUB \"{}\" disconnecting".format(self.topic))
         super(Subscriber, self).close()  # Client.close()

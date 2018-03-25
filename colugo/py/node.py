@@ -125,7 +125,7 @@ class Node:
         Returns:
             colugo.py.Subscriber object
         """
-        sock = Subscriber(self.loop, topic, callback)
+        sock = Subscriber(self.loop, topic, callback, on_connect)
         self.discovery.register_client(topic, zmq.SUB, node_uuid=self.uuid, socket=sock)
         return sock
 
