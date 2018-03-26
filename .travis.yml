@@ -1,5 +1,5 @@
 # Configuration based on https://github.com/korfuri/bazel-travis
-#sudo: false
+# sudo: false
 
 os: linux
 dist: xenial
@@ -8,34 +8,23 @@ language: python
 python:
   - "3.6"
 
-cache:
-  directories:
-  - $HOME/.cache/bazel
+# cache:
+#   directories:
+#   - $HOME/.cache/bazel
 
-# # command to install dependencies
-# # virtualenv is activated by default when specifying language: python
-install: skip
-#   - pip install -r requirements.txt
+install:
+  - pip install -r requirements.txt
 
 addons:
   apt:
     sources:
       - sourceline: "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8"
         key_url: "https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg"
-        - ubuntu-toolchain-r-test
     packages:
       - oracle-java8-installer
       - bazel
 
-# addons:
-#   apt:
-#     sources:
-#       - ubuntu-toolchain-r-test
-#     packages:
-#       - wget
-#       - openjdk-8-jdk
-
-before_install: skip
+# before_install: skip
 #   - echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
 #   - curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 #   - apt-get update && sudo apt-get install bazel
