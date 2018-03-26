@@ -11,7 +11,7 @@ class Socket:
     """Wrapper class for zmq.Socket
 
     This class utilizes a tornado event loop to support using ZmqStream for sending 
-    and receiving messages. Additionally it encorporates specific settings and infrastructure
+    and receiving messages. Additionally it stages sockets with specific configurations 
     to allow request/reply sockets to be more robust to timeout conditions and failure states.
 
     Attributes:
@@ -55,6 +55,7 @@ class Socket:
             protocol: zmq socket type
 
         """
+
         if protocol == zmq.REQ:
             # make sure that replies back to req's are coordinated with header data
             self.ctx.setsockopt(zmq.REQ_CORRELATE, 1)
@@ -67,6 +68,13 @@ class Socket:
         self.zmq_socket = self.ctx.socket(protocol)
 
     def connect(self, address, port):
+        """Connect the socket to a local or remote address:port
+
+        Args:
+            address: Decimal separated string (eg, 127.0.0.1) where service is bound
+            port: int associated with service port
+        """
+
         self.zmq_socket.connect("tcp://{}:{}".format(address, port))
         self.address = address  # 127.0.0.1
         self.port = port  # 10001
@@ -74,10 +82,20 @@ class Socket:
         return (self.address, self.port)
 
     def disconnect(self):
+        """Stop the zmqStream and disconnect the underlying socket
+        """
+
         self.stop_stream()
         self.zmq_socket.disconnect("tcp://{}:{}".format(self.address, self.port))
 
     def get_local_ip(self):
+        """Identifies the ip address of the local node
+
+        Returns:
+            String: Decimal separated string (eg, 127.0.0.1)
+        """
+
+        # TODO(pickledgator): Check robustness of this strategy and switch to netifaces if needed
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.connect(("10.255.255.255", 1))
@@ -89,6 +107,14 @@ class Socket:
         return ip
 
     def bind(self):
+        """Bind the underlying zmq socket to an ip on the local machine at a random available port
+
+        Also kicks off the zmqStream after binding.
+
+        Returns:
+            (String, int): Tuple containing the address string and the port chosen
+        """
+
         # TODO(pickledgator): Find specific range that has the most availability
         ip = self.get_local_ip()
         port = self.zmq_socket.bind_to_random_port("tcp://{}".format(ip), min_port=10001, max_port=20000, max_tries=100)
@@ -98,10 +124,17 @@ class Socket:
         return (self.address, self.port)
 
     def unbind(self):
+        """Reverse the bind of the underlying zmq socket and stop the zmqStream
+        """
         self.stop_stream()
         self.zmq_socket.unbind("tcp://{}:{}".format(self.address, self.port))
 
     def send(self, message):
+        """Identifies the correct underlying zmq send method based on the type of message
+
+        Args:
+            message: Message to be sent (string or bytes)
+        """
         self.logger.debug("Sending message: {}".format(message))
         if type(message) == str:
             # assumes string
