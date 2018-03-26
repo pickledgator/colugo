@@ -46,15 +46,18 @@ bazel build examples/...
 TODO
 
 ## Usage
-Every Colugo application can implement or inherit from the Node class, which contains the tornado event loop and references to the service discovery threads. You may add any number of supported zmq sockets (see below for supported socket types) to each node and setup callback functions for sending/receiving messages over those sockets.
+Every Colugo application can implement or inherit from the Node class, which contains the tornado event loop and references to the service discovery threads. Each process should have at most one node per thread (ideally, just one node per application, since all networking can be handled through that single instance). You may add any number of supported zmq sockets (see below for supported socket types) to the node and setup callback functions for sending/receiving messages over those sockets. It is recommended that the node thread be run on the main thread since it implements signal handlers.
+
+The node thread must remain unblocked at all times, as it uses a tornado event loop internally to handle sending and receiving messages on the zmq sockets. If your applications requires blocking calls, consider dispatching those blocking calls onto the Tornado event loop, or use asyncio futures.
 
 ### Supported ZMQ Patterns
 * Single Pub - Single Sub
-* Single Pub - Multi Sub
+* Single Pub - Multi Sub (Common)
 * Multi Pub - Single Sub
 * Multi Pub - Multi Pub
-* Single Request - Single Reply
+* Single Request - Single Reply (Common)
 * Multi Request - Single Reply
+* Single Request - Multi Reply (Round Robin)
 * Multi Request - Multi Reply (Round Robin)
 
 ### Example Publisher
@@ -148,6 +151,13 @@ if __name__ == "__main__":
 
 Additional examples using json and protobuf serialiation are included in the examples folder.
 
+## Known Limitations
+### Request-Reply patterns are one in, one out
+Due to the nature of request reply patterns within zeromq, request clients must wait for a reply server to reply before a second request message can be sent. A request can also include a timeout that will reset the request client socket in the event that the reply server never replies.
+
+### Service discovery only supports ip addresses on the same network
+Advanced networking capabilities such as connecting to sockets on different vlans is currently not possible. Ip addresses must originate on the same domain/subset or be publically addressable.
+
 ## Future
 * Investigate replacing Tornado with asyncio
 * Add more unit tests
@@ -155,3 +165,4 @@ Additional examples using json and protobuf serialiation are included in the exa
 * Add authentification and security
 * C++ implementation
 * Go implementation
+* Extend node to run on background threads
