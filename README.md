@@ -48,6 +48,15 @@ TODO
 ## Usage
 Every Colugo application can implement or inherit from the Node class, which contains the tornado event loop and references to the service discovery threads. You may add any number of supported zmq sockets (see below for supported socket types) to each node and setup callback functions for sending/receiving messages over those sockets.
 
+### Supported ZMQ Patterns
+* Single Pub - Single Sub
+* Single Pub - Multi Sub
+* Multi Pub - Single Sub
+* Multi Pub - Multi Pub
+* Single Request - Single Reply
+* Multi Request - Single Reply
+* Multi Request - Multi Reply (Round Robin)
+
 ### Example Publisher
 ```python
 from colugo.py.node import Node

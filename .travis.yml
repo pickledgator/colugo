@@ -8,6 +8,10 @@ language: python
 python:
   - "3.6"
 
+cache:
+  directories:
+  - $HOME/.cache/bazel
+
 # command to install dependencies
 # virtualenv is activated by default when specifying language: python
 install:
@@ -19,7 +23,6 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - wget
-      - pkg-config
 
 before_install:
   - wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
