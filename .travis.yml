@@ -1,5 +1,5 @@
 # Configuration based on https://github.com/korfuri/bazel-travis
-sudo: required
+sudo: false
 
 os: linux
 dist: xenial

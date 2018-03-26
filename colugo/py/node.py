@@ -45,7 +45,7 @@ class Node:
         self.logger.info("Node {} is initializing".format(self.name))
         self.loop = ioloop.IOLoop.current()
         self.uuid = str(uuid.uuid1())
-        self.discovery = Discovery(name, self.uuid, self.add_service_handler, self.remove_service_handler)
+        self.discovery = Discovery(self.uuid, self.add_service_handler, self.remove_service_handler)
         # exit conditions
         signal.signal(signal.SIGINT, lambda sig, frame: self.loop.add_callback_from_signal(self.stop))
 
@@ -108,7 +108,7 @@ class Node:
         self.discovery.register_server(topic, zmq.PUB, self.uuid, sock, sock.address, sock.port)
         return sock
 
-    def add_subscriber(self, topic, callback, on_connect):
+    def add_subscriber(self, topic, callback, on_connect=None):
         """Helper function to add a colugo.py.Subscriber object to the node
 
         Each individual Node may have numerous subscribers using the same topic, and multiple Nodes (local or remote)
@@ -120,7 +120,7 @@ class Node:
         Args:
             topic: Topic string that identifies the socket on the network
             callback: Function handler when messages are received
-            on_connect: Callback handler when a connection is made with the publisher socket
+            on_connect: Callback handler when a connection is made with the publisher socket (default: None)
 
         Returns:
             colugo.py.Subscriber object

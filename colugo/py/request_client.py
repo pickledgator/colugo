@@ -34,13 +34,13 @@ class RequestClient(Socket):
         on_connect: Callback handler when a connection is attempted
     """
 
-    def __init__(self, loop, topic, on_connect):
+    def __init__(self, loop, topic, on_connect=None):
         """Constructor for request client
 
         Args:
             loop: Reference to the tornado event loop
             topic: The topic associated with the socket on the network
-            on_connect: Callback handler when a connection is attempted
+            on_connect: Callback handler when a connection is attempted (default: None)
         """
         super(RequestClient, self).__init__(loop, zmq.REQ)  # Socket.__init__()
         self.callback = None
@@ -56,7 +56,8 @@ class RequestClient(Socket):
         """
         self.logger.debug("REQ \"{}\" connecting to tcp://{}:{}".format(self.topic, address, port))
         super(RequestClient, self).connect(address, port) # Socket.connect()
-        self.on_connect()
+        if self.on_connect:
+            self.on_connect()
 
     def send(self, message, callback, timeout=2000, timeout_handler=None):
         """Helper function for sending a request message with a reply timeout

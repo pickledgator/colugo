@@ -16,13 +16,13 @@ class Subscriber(Socket):
         callback: Handler executed when the socket receives messages from a publisher
     """
 
-    def __init__(self, loop, topic, callback, on_connect):
+    def __init__(self, loop, topic, callback, on_connect=None):
         """Constructor for the subscriber class
 
         Args:
             topic: The topic associated with the socket on the network
             callback: Handler executed when the socket receives messages from a publisher
-            on_connect: Callback handler when a connection is attempted
+            on_connect: Callback handler when a connection is attempted (default: None)
         """
         super(Subscriber, self).__init__(loop, zmq.SUB)  # Socket.__init__()
         self.topic = topic
@@ -41,7 +41,8 @@ class Subscriber(Socket):
         self.logger.debug("SUB \"{}\" connecting to tcp://{}:{}".format(self.topic, address, port))
         super(Subscriber, self).connect(address, port)
         super(Subscriber, self).receive(self.callback)
-        self.on_connect()
+        if self.on_connect: 
+            self.on_connect()
 
     def set_filter(self, filter_string=""):
         """Helper function to enable zmq.SUBSCRIBER filters
