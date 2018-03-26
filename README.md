@@ -22,13 +22,24 @@ Colugo has the following system-level dependencies:
 
 ## Installation
 
-### OSX
-First start with system dependencies for our build system
+### OSX Setup
+First start with system dependencies for the build system
 ```shell
 brew install bazel
 pip3 install virtualenv
 ```
 
+### Linux (Ubuntu 16.04) Setup
+First start with system dependencies for the build system
+```shell
+sudo apt-get update && apt-get install openjdk-8-jdk curl -y
+sudo echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
+sudo apt-get update && apt-get install bazel python -y
+pip3 install virtualenv
+```
+
+### Clone and Build
 Then, clone the project and setup a virtual env to work within
 ```shell
 git clone https://github.com/pickledgator/colugo
@@ -41,9 +52,6 @@ Then, kick off bazel to pull down dependencies and setup the toolchains
 ```shell
 bazel build examples/...
 ```
-
-### Linux
-TODO
 
 ## Usage
 Every Colugo application can implement or inherit from the Node class, which contains the tornado event loop and references to the service discovery threads. Each process should have at most one node per thread (ideally, just one node per application, since all networking can be handled through that single instance). You may add any number of supported zmq sockets (see below for supported socket types) to the node and setup callback functions for sending/receiving messages over those sockets. It is recommended that the node thread be run on the main thread since it implements signal handlers.
@@ -155,10 +163,11 @@ Additional examples using json and protobuf serialiation are included in the exa
 ### Request-Reply patterns are one in, one out
 Due to the nature of request reply patterns within zeromq, request clients must wait for a reply server to reply before a second request message can be sent. A request can also include a timeout that will reset the request client socket in the event that the reply server never replies.
 
-### Service discovery only supports ip addresses on the same network
+### Service discovery doesn't support bridging multiple vlans
 Advanced networking capabilities such as connecting to sockets on different vlans is currently not possible. Ip addresses must originate on the same domain/subset or be publically addressable.
 
 ## Future
+* Implement Multi Pub - Single Sub with sub as server
 * Investigate replacing Tornado with asyncio
 * Add more unit tests
 * Add integration tests
