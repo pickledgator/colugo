@@ -1,6 +1,6 @@
 # Colugo [![Build Status](https://travis-ci.org/pickledgator/colugo.svg?branch=master)](https://travis-ci.org/pickledgator/colugo)
 
-Colugo is a 0MQ wrapper that provides an asynchronous application layer networking structure, abstracting the complexities of the low level C reference implementation of libzmq and adding additional functionality and robustness.
+Colugo is a [0MQ](http://zeromq.org/) wrapper that provides an asynchronous application layer networking structure, abstracting the complexities of the low level C reference implementation of libzmq and adding additional functionality and robustness.
 
 Colugo adds capability on top of zmq in the following ways:
 * Service discovery using zeroconf
@@ -12,13 +12,13 @@ Colugo adds capability on top of zmq in the following ways:
 
 ## Dependencies
 Colugo has the following python dependencies:
-* PyZMQ
-* Tornado
-* Zeroconf
-* Protobuf (optional)
+* [pyzmq](https://github.com/zeromq/pyzmq)
+* [Tornado](https://github.com/tornadoweb/tornado)
+* [Zeroconf](https://github.com/jstasiak/python-zeroconf)
+* [Protobuf](https://github.com/google/protobuf) (optional)
 
 Colugo has the following system-level dependencies:
-* Bazel
+* [Bazel](https://github.com/bazelbuild/bazel)
 
 ## Installation
 
