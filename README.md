@@ -7,7 +7,7 @@ Colugo adds capability on top of zmq in the following ways:
 * Support for listening timeouts in rep-req patterns
 * Non-dependence on any particular serialization of messages
 * Automated logging and playback of message streams (TODO)
-* Service monitoring
+* Service monitoring (TODO)
 * Scheduling helpers
 
 ## Dependencies
@@ -144,3 +144,5 @@ Additional examples using json and protobuf serialiation are included in the exa
 * Add more unit tests
 * Add integration tests
 * Add authentification and security
+* C++ implementation
+* Go implementation
