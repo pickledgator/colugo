@@ -1,5 +1,5 @@
 # Configuration based on https://github.com/korfuri/bazel-travis
-sudo: false
+#sudo: false
 
 os: linux
 dist: xenial
@@ -12,23 +12,37 @@ cache:
   directories:
   - $HOME/.cache/bazel
 
-# command to install dependencies
-# virtualenv is activated by default when specifying language: python
-install:
-  - pip install -r requirements.txt
+# # command to install dependencies
+# # virtualenv is activated by default when specifying language: python
+# install:
+#   - pip install -r requirements.txt
 
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+      - sourceline: "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8"
+        key_url: "https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg"
+        - ubuntu-toolchain-r-test
     packages:
-      - wget
+      - oracle-java8-installer
+      - bazel
 
-before_install:
-  - wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
-  - sha256sum -c tools/bazel_0.11.1-without-jdk-installer-linux-x86_64.sh.sha256
-  - chmod +x bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
-  - ./bazel-0.11.1-without-jdk-installer-linux-x86_64.sh --user
+# addons:
+#   apt:
+#     sources:
+#       - ubuntu-toolchain-r-test
+#     packages:
+#       - wget
+#       - openjdk-8-jdk
+
+# before_install:
+#   - echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+#   - curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+#   - apt-get update && sudo apt-get install bazel
+#   #- wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
+#   #- sha256sum -c tools/bazel_0.11.1-without-jdk-installer-linux-x86_64.sh.sha256
+#   #- chmod +x bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
+#   #- ./bazel-0.11.1-without-jdk-installer-linux-x86_64.sh --user
 
 script:
   - bazel build examples/...
