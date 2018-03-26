@@ -3,9 +3,9 @@
 import os
 import sys
 # local path to library
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from colugo.socket import Socket
+from colugo.py.zsocket import Socket
 from tornado import ioloop
 import zmq
 import unittest

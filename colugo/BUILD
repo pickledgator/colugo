@@ -19,3 +19,14 @@ py_library(
         requirement("zeroconf"),
     ],
 )
+
+py_test(
+    name='test_socket',
+    srcs=[
+        'py/test/test_socket.py',
+    ],
+    deps=[
+        ':colugo_py',
+    ],
+    size = 'small',
+)

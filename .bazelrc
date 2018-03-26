@@ -1,3 +1,6 @@
+
+
+
 # This is from Bazel's former travis setup, to avoid blowing up the RAM usage.
 startup --host_jvm_args=-Xmx2500m
 startup --host_jvm_args=-Xms2500m
@@ -11,8 +14,8 @@ build --verbose_failures
 # runs stuff in a container, and since Travis already runs its script
 # in a container (unless you require sudo in your .travis.yml) this
 # fails to run tests.
-build --spawn_strategy=standalone --genrule_strategy=standalone
-test --test_strategy=standalone
+build --spawn_strategy=standalone --genrule_strategy=standalone --ignore_unsupported_sandboxing
+test --test_strategy=standalone --ignore_unsupported_sandboxing
 
 # This is to work around problems described in https://github.com/bazelbuild/bazel/issues/1446
 build --force_python=py3
