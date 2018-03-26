@@ -22,8 +22,8 @@ addons:
       - pkg-config
 
 before_install:
-  - wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-without-jdk-installer-darwin-x86_64.sh
-  - sha256sum -c tools/bazel_0.11.1-without-jdk-installer-darwin-x86_64.sh.sha256
+  - wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
+  - sha256sum -c tools/bazel_0.11.1-without-jdk-installer-linux-x86_64.sh.sha256
   - chmod +x bazel-0.11.1-without-jdk-installer-linux-x86_64.sh
   - ./bazel-0.11.1-without-jdk-installer-linux-x86_64.sh --user
 

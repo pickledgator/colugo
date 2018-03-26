@@ -1,4 +1,8 @@
 .DS_Store
 *.pyc
 env/
-bazel-*
+bazel-bin
+bazel-colugo
+bazel-genfiles
+bazel-out
+bazel-testlogs
