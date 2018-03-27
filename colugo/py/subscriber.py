@@ -28,7 +28,7 @@ class Subscriber(Socket):
         self.topic = topic
         self.callback = callback
         self.on_connect = on_connect
-        self.set_filter()
+        self.set_filter() # Socket.set_filter()
 
     def connect(self, address, port):
         """Connect to a publisher socket at a specified address and port and setup listening
@@ -43,21 +43,6 @@ class Subscriber(Socket):
         super(Subscriber, self).receive(self.callback)
         if self.on_connect: 
             self.on_connect()
-
-    def set_filter(self, filter_string=""):
-        """Helper function to enable zmq.SUBSCRIBER filters
-
-        In zmq, the filter (string or bytes) can be used to screen multi-part messages such 
-        that only messages with the first element of the array match an associated string. 
-        Currently, we configure the subscriber sockets to receive all messages from any publisher.
-        TODO(pickledgator): Add support for filter->separate callbacks?
-
-        Args:
-            filter_string: Setup socket to only allow multi-part messages whose first element 
-                           match this string
-        """
-        # "" is a wildcard to accept all messages
-        self.zmq_socket.setsockopt_string(zmq.SUBSCRIBE, filter_string)
 
     def close(self):
         """Just calls the colugo.py.Socket.close()

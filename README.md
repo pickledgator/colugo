@@ -169,6 +169,7 @@ Advanced networking capabilities such as connecting to sockets on different vlan
 ## Future
 * Implement Multi Pub - Single Sub with sub as server
 * Investigate replacing Tornado with asyncio
+* Add support for websockets/requests
 * Add more unit tests
 * Add integration tests
 * Add authentification and security

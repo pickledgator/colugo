@@ -84,9 +84,12 @@ class Socket:
     def disconnect(self):
         """Stop the zmqStream and disconnect the underlying socket
         """
-
+        # TODO(pickledgator): Figure out why this fails with error: Socket operation on non-socket
         self.stop_stream()
-        self.zmq_socket.disconnect("tcp://{}:{}".format(self.address, self.port))
+        try:
+            self.zmq_socket.disconnect("tcp://{}:{}".format(self.address, self.port))
+        except Exception as e:
+            pass
 
     def get_local_ip(self):
         """Identifies the ip address of the local node
@@ -105,6 +108,21 @@ class Socket:
         finally:
             s.close()
         return ip
+
+    def set_filter(self, filter_string=""):
+        """Helper function to enable zmq.SUBSCRIBER filters
+
+        In zmq, the filter (string or bytes) can be used to screen multi-part messages such 
+        that only messages with the first element of the array match an associated string. 
+        Currently, we configure the subscriber sockets to receive all messages from any publisher.
+        TODO(pickledgator): Add support for filter->separate callbacks?
+
+        Args:
+            filter_string: Setup socket to only allow multi-part messages whose first element 
+                           match this string
+        """
+        # "" is a wildcard to accept all messages
+        self.zmq_socket.setsockopt_string(zmq.SUBSCRIBE, filter_string)
 
     def bind(self):
         """Bind the underlying zmq socket to an ip on the local machine at a random available port
@@ -126,8 +144,12 @@ class Socket:
     def unbind(self):
         """Reverse the bind of the underlying zmq socket and stop the zmqStream
         """
+        # TODO(pickledgator): Figure out why this fails with error: Socket operation on non-socket
         self.stop_stream()
-        self.zmq_socket.unbind("tcp://{}:{}".format(self.address, self.port))
+        try:
+            self.zmq_socket.unbind("tcp://{}:{}".format(self.address, self.port))
+        except Exception as e:
+            pass
 
     def send(self, message):
         """Identifies the correct underlying zmq send method based on the type of message
@@ -164,7 +186,7 @@ class Socket:
         def msg_handler(handler, timeout, message):
             # this callback receives a message list, with one element, so just pass the contents to the
             # application handler
-            handler(message[0])
+            handler(message[0].decode("utf-8"))
             # if we received the message, then we need to cancel the watchdog timeout from
             # the last receive call
             if timeout:

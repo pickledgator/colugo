@@ -32,3 +32,36 @@ py_test(
     ],
     size = 'small',
 )
+
+py_test(
+    name='test_node',
+    srcs=[
+        'py/test/test_node.py',
+    ],
+    deps=[
+        ':colugo_py',
+    ],
+    size = 'small',
+)
+
+py_test(
+    name='test_rpc',
+    srcs=[
+        'py/test/test_rpc.py',
+    ],
+    deps=[
+        ':colugo_py',
+    ],
+    size = 'small',
+)
+
+py_test(
+    name='test_pubsub',
+    srcs=[
+        'py/test/test_pubsub.py',
+    ],
+    deps=[
+        ':colugo_py',
+    ],
+    size = 'small',
+)
