@@ -165,6 +165,7 @@ Due to the nature of request reply patterns within zeromq, request clients must 
 Advanced networking capabilities such as connecting to sockets on different vlans is currently not possible. Ip addresses must originate on the same domain/subset or be publically addressable.
 
 ### Currently only supporting TCP protocol
+Other zmq socket types (ipc, inproc) will be supported as I can build test infrastructure for them. Shared memory may be supported at a future time.
 
 ## Future
 * Implement Multi Pub - Single Sub with sub as server
