@@ -3,7 +3,7 @@
 Colugo is a [0MQ](http://zeromq.org/) wrapper that provides an asynchronous application layer networking structure, abstracting the complexities of the low level C reference implementation of libzmq and adding additional functionality and robustness.
 
 Colugo adds capability on top of zmq in the following ways:
-* Service discovery using zeroconf
+* Decentralized service discovery using zeroconf (no broker)
 * Support for listening timeouts in rep-req patterns
 * Non-dependence on any particular serialization of messages
 * Automated logging and playback of message streams (TODO)
@@ -84,7 +84,6 @@ class PublisherExample(Node):
 if __name__ == "__main__":
 
     pub_test_node = PublisherExample("PubExample")
-    # this will block while there is work to be done by the ioloop
     pub_test_node.start()
 ```
 
@@ -103,7 +102,6 @@ class SubscriberExample(Node):
 if __name__ == "__main__":
 
     sub_example_node = SubscriberExample("SubscriberExample")
-    # this will block while there is work to be done by the ioloop
     sub_example_node.start()
 ```
 
@@ -166,6 +164,8 @@ Due to the nature of request reply patterns within zeromq, request clients must 
 ### Service discovery doesn't support bridging multiple vlans
 Advanced networking capabilities such as connecting to sockets on different vlans is currently not possible. Ip addresses must originate on the same domain/subset or be publically addressable.
 
+### Currently only supporting TCP protocol
+
 ## Future
 * Implement Multi Pub - Single Sub with sub as server
 * Investigate replacing Tornado with asyncio
@@ -175,3 +175,4 @@ Advanced networking capabilities such as connecting to sockets on different vlan
 * C++ implementation
 * Go implementation
 * Extend node to run on background threads
+* Add tests for ipc, inproc, shm
