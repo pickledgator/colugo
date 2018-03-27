@@ -1,5 +1,5 @@
 # Configuration based on https://github.com/korfuri/bazel-travis
-sudo: required
+sudo: false
 
 os: linux
 dist: xenial
@@ -7,9 +7,9 @@ language: python
 python:
   - "3.6"
 
-cache:
-  directories: 
-    - $HOME/.bazelcache
+# cache:
+#   directories: 
+#     - $HOME/.bazelcache
 
 addons:
   apt:
@@ -20,11 +20,12 @@ addons:
       - pkg-config
 
 before_install:
-  - sudo chown -R travis:travis /home/travis/
+  # - sudo chown -R travis:travis /home/travis/
   - wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel_0.11.1-linux-x86_64.deb
   - sha256sum -c tools/bazel_0.11.1-linux-x86_64.deb.sha256
   - sudo dpkg --force-all -i bazel_0.11.1-linux-x86_64.deb
 
 script:
-  - bazel build examples/... --experimental_repository_cache=$HOME/.bazelcache
+  # - bazel build examples/... --experimental_repository_cache=$HOME/.bazelcache
+  - bazel build examples/...
   - bazel test --test_output=errors --noshow_progress colugo/...
