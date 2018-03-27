@@ -9,8 +9,8 @@ python:
 
 cache:
   directories: 
-    - "$HOME/.bazelcache",
-    - "$HOME/.cache/bazel"
+    - $HOME/.bazelcache
+    - $HOME/.cache/bazel
 
 addons:
   apt:
