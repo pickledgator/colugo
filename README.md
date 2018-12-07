@@ -155,7 +155,7 @@ if __name__ == "__main__":
     rep_example_node.start()
 ```
 
-Additional examples using json and protobuf serialiation are included in the examples folder.
+Additional examples using json and protobuf serialiation are included in the [examples](https://github.com/pickledgator/colugo/tree/master/examples/py) folder.
 
 ## Known Limitations
 ### Request-Reply patterns are one in, one out
