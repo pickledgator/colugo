@@ -1,10 +1,13 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
 # -----------------------------
 # BAZEL PYTHON AND PIP
 
 git_repository(
     name = "io_bazel_rules_python",
     remote = "https://github.com/bazelbuild/rules_python.git",
-    commit = "115e3a0dab4291184fdcb0d4e564a0328364571a", # Feb 23, 2018
+    commit = "fdbb17a4118a1728d19e638a5291b4c4266ea5b8", # May 14, 2019
 )
 
 load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories")
@@ -22,45 +25,39 @@ pip_install()
 # -----------------------------
 # PROTOBUF
 
+# Includes proto_library, cc_proto_library and py_proto_library skylark rules
 http_archive(
     name = "com_google_protobuf",
-    sha256 = "826425182ee43990731217b917c5c3ea7190cfda141af4869e6d4ad9085a740f",
-    strip_prefix = "protobuf-3.5.1",
-    urls = ["https://github.com/google/protobuf/archive/v3.5.1.tar.gz"], # Dec 20, 2017
+    strip_prefix = "protobuf-3.8.0-rc1",
+    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.8.0-rc1.tar.gz"], # May 1, 2019
+    sha256 = "d399f651dbdc5f9116a2da199a808c815c0aeeb8d0b46e3213eee5a41263aeff",
 )
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+protobuf_deps()
 
-git_repository(
-  name = "org_pubref_rules_protobuf",
-  remote = "https://github.com/pubref/rules_protobuf",
-  tag = "v0.8.1",
-)
-
-load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
-
-cpp_proto_repositories(
-    excludes = ["com_google_protobuf"],
-)
-
-load("@org_pubref_rules_protobuf//python:rules.bzl", "py_proto_repositories")
-
-py_proto_repositories(
-    omit_cpp_repositories = True,
-    excludes = ["com_google_protobuf"],
-)
-
-# TODO(pickledgator): This is required for :protobuf_python for now but according to:
-# https://github.com/google/protobuf/pull/4204
-# its actually only used in :protobuf_src, so there's an open issue on bazel similarly related to fixing it: 
-# https://github.com/bazelbuild/bazel/issues/1952
-
-new_http_archive(
-    name = "six_archive",
-    build_file = "thirdparty/six.BUILD",
-    sha256 = "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a",
-    url = "https://pypi.python.org/packages/source/s/six/six-1.10.0.tar.gz#md5=34eed507548117b2ab523ab14b2f8b55",
+http_archive(
+    name = "six_package",
+    build_file = "//third-party/six.BUILD",
+    sha256 = "0ce7aef70d066b8dda6425c670d00c25579c3daad8108b3e3d41bef26003c852",
+    url = "https://github.com/benjaminp/six/archive/1.12.0.tar.gz",
+    strip_prefix = "six-1.12.0",
 )
 
 bind(
     name = "six",
-    actual = "@six_archive//:six",
+    actual = "@six_package//:six",
 )
+
+# -----------------------------
+# Skylark Tools
+# Used internally by protobuf
+
+http_archive(
+    name = "bazel_skylib",
+    strip_prefix = "bazel-skylib-0.8.0",
+    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/0.8.0.tar.gz"], # Mar 20, 2019
+    sha256 = "2ea8a5ed2b448baf4a6855d3ce049c4c452a6470b1efd1504fdb7c1c134d220a",
+)
+# Verify we're using the right version of bazel
+load("@bazel_skylib//lib:versions.bzl", "versions")
+versions.check(minimum_bazel_version = "0.25.2")

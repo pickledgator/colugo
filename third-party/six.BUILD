@@ -1,3 +1,7 @@
+# Needed for protobuf
+
+licenses(["notice"])
+
 genrule(
   name = "copy_six",
   srcs = ["six-1.10.0/six.py"],

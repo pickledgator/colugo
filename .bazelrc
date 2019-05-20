@@ -17,10 +17,6 @@ build --verbose_failures
 build --spawn_strategy=standalone --genrule_strategy=standalone --ignore_unsupported_sandboxing
 test --test_strategy=standalone --ignore_unsupported_sandboxing
 
-# This is to work around problems described in https://github.com/bazelbuild/bazel/issues/1446
-build --force_python=py3
-build --host_force_python=py3
-
 # Enable gcc colors
 build --copt -fdiagnostics-color=always
 

@@ -1,17 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@org_pubref_rules_protobuf//python:rules.bzl", "py_proto_library")
-
-filegroup(
-    name = "protos",
-    srcs = [
-        "test.proto",
-    ],
-)
+load("@com_google_protobuf//:protobuf.bzl", "py_proto_library")
 
 py_proto_library(
     name = "py",
-    protos = [":protos"],
-    verbose = 0,
-    with_grpc = False,
+    srcs = glob(["*.proto"]),
+    deps = [
+        "@com_google_protobuf//:protobuf_python"
+    ],
 )
