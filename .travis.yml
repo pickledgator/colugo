@@ -22,7 +22,7 @@ addons:
 before_install:
   # - sudo chown -R travis:travis /home/travis/
   - pip install codecov
-  - curl -L -o bbazel-0.25.2-installer-linux-x86_64.sh https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel-0.25.2-installer-linux-x86_64.sh
+  - curl -L -o bazel-0.25.2-installer-linux-x86_64.sh https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel-0.25.2-installer-linux-x86_64.sh
   - chmod +x bazel-0.25.2-installer-linux-x86_64.sh
   - ./bazel-0.25.2-installer-linux-x86_64.sh
 
