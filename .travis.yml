@@ -24,7 +24,7 @@ before_install:
   - pip install codecov
   - curl -L -o bazel-0.25.2-installer-linux-x86_64.sh https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel-0.25.2-installer-linux-x86_64.sh
   - chmod +x bazel-0.25.2-installer-linux-x86_64.sh
-  - ./bazel-0.25.2-installer-linux-x86_64.sh
+  - ./bazel-0.25.2-installer-linux-x86_64.sh --user
 
 script:
   # - bazel build examples/... --experimental_repository_cache=$HOME/.bazelcache
