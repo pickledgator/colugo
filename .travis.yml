@@ -22,9 +22,9 @@ addons:
 before_install:
   # - sudo chown -R travis:travis /home/travis/
   - pip install codecov
-  - wget https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel_0.25.2-linux-x86_64.deb
-  - sha256sum -c tools/bazel_0.25.2-linux-x86_64.deb.sha256
-  - sudo dpkg --force-all -i bazel_0.25.2-linux-x86_64.deb
+  - curl -L -o bbazel-0.25.2-installer-linux-x86_64.sh https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel-0.25.2-installer-linux-x86_64.sh
+  - chmod +x bazel-0.25.2-installer-linux-x86_64.sh
+  - ./bazel-0.25.2-installer-linux-x86_64.sh
 
 script:
   # - bazel build examples/... --experimental_repository_cache=$HOME/.bazelcache
